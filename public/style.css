@@ -30,13 +30,20 @@ form button {
     padding: 10px; 
 }
 
+#mess {
+    float: right;
+    width: 844px;
+    height: 650px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
 #messages { 
-    list-style-type: none; 
-    margin: 0; 
-    padding: 0; 
-    margin-bottom: 40px;
-    float: bottom right;
-    width: 500px;
+    overflow: auto;
+    position: relative;
+    margin-bottom: 0;
+    padding: 0 7px;
 }
 
 #messages li { 
@@ -48,8 +55,9 @@ form button {
 }
 
 #userdiv {
+    position: fixed;
     width: 200px;
-    height: 500px;
+    height: 100%;
     float: left;
     border: 1px solid;
 }

@@ -42,6 +42,7 @@ $(function() {
                 }
             $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='message_list'> " + chat_history[j].mess + "<br/></div><div class=time> " + chat_history[j].timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
         }
+        $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
         //print current users to user
         $users.html("you: " + data.username + '<br/>' + all_users);
     });
@@ -89,7 +90,6 @@ $(function() {
 
     //when the user types a message (from the tutorial)
     $message.submit(function(){
-
         let sub_message = $('#m').val();
         //change the colour of the name
         if (sub_message.startsWith('/nickcolor')){
@@ -163,16 +163,24 @@ $(function() {
         }
         $users.html("you: " + curr_username + '<br/>' + new_1);
     });
-
+    //update the color_u list
     socket.on('change color', function(data){
         color_u = data;
     });
 
     //format the message that the user sends (from the tutorial)
     socket.on('chat message', function(msg){
-        console.log(color_u[msg.index].color);
-        $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '">' + msg.user + "</div><div class='message_list'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
-        window.scrollTo(0, document.body.scrollHeight);
+        //bold the current user
+        if (curr_username === msg.user) {
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '"><b>' + msg.user + "</b></div><div class='current_user'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+        }
+        //if its not the current user then dont bold it
+        else {
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '">' + msg.user + "</div><div class='message_list'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+        }
+        //make the messages scrollable
+        console.log($('#messages')[0].scrollHeight);
+        $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
     });
 
 });
