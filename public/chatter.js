@@ -8,6 +8,7 @@ $(function() {
     let curr_username = '';
     let chat_history = [];
     let user_color = '';
+    let color_u = [];
 
     var socket = io();
 
@@ -22,6 +23,8 @@ $(function() {
         active_users = data.current_users;
         curr_username = data.username;
         chat_history = data.history;
+        color_u = data.color;
+        console.log(color_u);
 
         data.current_users.splice(data.current_users.indexOf(data.username, 1));
         let all_users = ''
@@ -31,7 +34,13 @@ $(function() {
         }
         //populate the chat with messages that people have already sent
         for (let j = 0; j < chat_history.length; j++) {
-            $('#messages').append($("<li>").html(chat_history[j].user + ": " + chat_history[j].mess + "<br/><div class=time> time: " + chat_history[j].timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+            let col = '';
+            let i = color_u.findIndex(x => x.usr === chat_history[j].user);
+                if (i != -1) {
+                    console.log(color_u[i].color);
+                    col = color_u[i].color;
+                }
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='message_list'> " + chat_history[j].mess + "<br/></div><div class=time> " + chat_history[j].timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
         }
         //print current users to user
         $users.html("you: " + data.username + '<br/>' + all_users);
@@ -39,6 +48,8 @@ $(function() {
 
     //for when a user enters
     socket.on('add user', function(data){
+        //push color into the user
+        color_u.push({usr: data, color: '000000'});
         //add user to active user list
         active_users.push(data);
         //add the user to the user list
@@ -57,6 +68,14 @@ $(function() {
         $users.html("you: " + curr_username + '<br/>' + nw_user);
     });
 
+    //change the color for that user for everyone
+    socket.on('color forall', function(name, col){
+            let i = color_u.findIndex(x => x.usr === name);
+            if (i != -1) {
+                color_u[i].color = col;
+            }
+    });
+
     socket.on('remove user', function(data){
         //remove the user from the list of users
         active_users.splice(active_users.indexOf(data), 1);
@@ -72,6 +91,33 @@ $(function() {
     $message.submit(function(){
 
         let sub_message = $('#m').val();
+        //change the colour of the name
+        if (sub_message.startsWith('/nickcolor')){
+            //make sure there are no other messages afterwards
+            if (sub_message.length === 17) {
+                user_color = sub_message.substring(11, 17);
+                //make sure they dont user other characters other than 0-9 a-z
+                if (user_color.match("^[A-z0-9]+$") != null) {
+                    socket.emit('color change', curr_username, user_color);
+                    //change the username color for the current username only
+                    let i = color_u.findIndex(x => x.usr === curr_username);
+                        if (i != -1) {
+                            color_u[i].color = user_color;
+                        }
+                    socket.emit('chat message', curr_username + " changed their color to " + user_color);
+                }
+                //error message for special characters
+                else {
+                    $userError.html('Please only user numbers and letters to change the color.')
+                }
+            }
+            //error message for length
+            else {
+                $userError.html('Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0)');
+            }
+            $('#m').val('');
+            return false;
+        }
         //changin the username when user types the keywords
         if (sub_message.startsWith('/nick')) {
             //get the username they selected
@@ -93,11 +139,8 @@ $(function() {
             else {
                 $userError.html('Please pick a shorter username (can be up to 20 characters long).')
             }
-        }
-        else if (sub_message.startsWith('/nickcolor')){
-            if (sub_message.length === 17) {
-                user_color = sub_message.substring(11, 17);
-            }
+            $('#m').val('');
+            return false;
         }
         //if no commands just print message
         else {
@@ -121,10 +164,15 @@ $(function() {
         $users.html("you: " + curr_username + '<br/>' + new_1);
     });
 
+    socket.on('change color', function(data){
+        color_u = data;
+    });
+
     //format the message that the user sends (from the tutorial)
     socket.on('chat message', function(msg){
-      $('#messages').append($("<li>").html(msg.user + ": " + msg.mess + "<br/><div class=time> time: " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
-      window.scrollTo(0, document.body.scrollHeight);
+        console.log(color_u[msg.index].color);
+        $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '">' + msg.user + "</div><div class='message_list'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+        window.scrollTo(0, document.body.scrollHeight);
     });
 
 });
