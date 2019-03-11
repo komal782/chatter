@@ -19,12 +19,10 @@ $(function() {
 
     //initializing the first users that are already connected
     socket.on('all users', function(data) {
-        //console.log(data.username, data.current_users);
         active_users = data.current_users;
         curr_username = data.username;
         chat_history = data.history;
         color_u = data.color;
-        console.log(color_u);
 
         data.current_users.splice(data.current_users.indexOf(data.username, 1));
         let all_users = ''
@@ -32,19 +30,38 @@ $(function() {
         for (let i = 0; i < data.current_users.length; i++) {
             all_users =  all_users + '<li>' + data.current_users[i] + '<br/>';
         }
-        //populate the chat with messages that people have already sent
+        //make sure the time is in the right format
+        let isPM = false;
+        let true_time = '';
         for (let j = 0; j < chat_history.length; j++) {
+            //get the time...
+            let temp_time = chat_history[j].timestamp.slice(11, -11);
+            if (temp_time > 12) {
+                isPM = true;
+                temp_time = temp_time - 12;
+            }
+            else {
+                isPM = false;
+            }
+            //add the pm or the am to the end of the time
+            if (isPM) {
+                true_time = temp_time + chat_history[j].timestamp.slice(13, -8) + ' pm';
+            }
+            else {
+                true_time = temp_time + chat_history[j].timestamp.slice(13, -8) + ' am';
+            }
+            //populate the chat with messages that people have already sent
             let col = '';
+            //get the right color for the person
             let i = color_u.findIndex(x => x.usr === chat_history[j].user);
                 if (i != -1) {
-                    console.log(color_u[i].color);
                     col = color_u[i].color;
                 }
-            $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='message_list'> " + chat_history[j].mess + "<br/></div><div class=time> " + chat_history[j].timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='time'> " + chat_history[j].timestamp.replace(/#|-/g,'/').slice(0, -14) + '  ' + true_time +  "<br/></div><div class='message_list'> " + chat_history[j].mess + "</div>"));
         }
         $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
         //print current users to user
-        $users.html("you: " + data.username + '<br/>' + all_users);
+        $users.html("<div> <p class='you'>" + data.username + '</p></div><br/>' + all_users);
     });
 
     //for when a user enters
@@ -66,7 +83,7 @@ $(function() {
         for (let i = 0; i < active_users.length; i++) {
             nw_user =  nw_user + '<li>' + active_users[i] + '<br/>';
         }
-        $users.html("you: " + curr_username + '<br/>' + nw_user);
+        $users.html("<div> <p class='you'>" + curr_username + '</p></div><br/>' + nw_user);
     });
 
     //change the color for that user for everyone
@@ -85,7 +102,7 @@ $(function() {
         for (let i = 0; i < active_users.length; i++) {
             new_users =  new_users + '<li>' + active_users[i] + '<br/>';
         }
-       $users.html("you: " + curr_username + '<br/>' + new_users);
+       $users.html("<div> <p class='you'>" + curr_username + '</p></div><br/>' + new_users);
     });
 
     //when the user types a message (from the tutorial)
@@ -108,12 +125,16 @@ $(function() {
                 }
                 //error message for special characters
                 else {
-                    $userError.html('Please only user numbers and letters to change the color.')
+                    $('#messages').append($("<li>").html('<div class="error">Please only user numbers and letters to change the color.</div>'));
+
+                   // $userError.html('Please only user numbers and letters to change the color.')
                 }
             }
             //error message for length
             else {
-                $userError.html('Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0)');
+                $('#messages').append($("<li>").html('<div class="error">Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0).</div>'));
+
+                //$userError.html('Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0)');
             }
             $('#m').val('');
             return false;
@@ -127,7 +148,9 @@ $(function() {
                 //change the username in the server
                 socket.emit('change nick', new_name, function(data){
                     if(!data) {
-                        $userError.html('This username is already taken! Please choose another one.')
+                        $('#messages').append($("<li>").html('<div class="error">This username is already taken! Please choose another one.</div>'));
+
+                      //  $userError.html('This username is already taken! Please choose another one.')
                     }
                     //show others who changed name
                     else {
@@ -137,7 +160,9 @@ $(function() {
             }
             //error message
             else {
-                $userError.html('Please pick a shorter username (can be up to 20 characters long).')
+                $('#messages').append($("<li>").html('<div class="error">Please pick a shorter username (can be up to 20 characters long).</div>'));
+
+               // $userError.html('Please pick a shorter username (can be up to 20 characters long).')
             }
             $('#m').val('');
             return false;
@@ -154,14 +179,13 @@ $(function() {
         //the old nick name from the box
         active_users = data.current_users;
         curr_username = data.username;
-        console.log(active_users);
         active_users.splice(active_users.indexOf(curr_username), 1);
         //update list of active users
         let new_1 = '';
         for (let i = 0; i < active_users.length; i++) {
             new_1 =  new_1 + '<li>' + active_users[i] + '<br/>';
         }
-        $users.html("you: " + curr_username + '<br/>' + new_1);
+        $users.html("<div> <p class='you'> " + curr_username + '</p></div><br/>' + new_1);
     });
     //update the color_u list
     socket.on('change color', function(data){
@@ -170,16 +194,35 @@ $(function() {
 
     //format the message that the user sends (from the tutorial)
     socket.on('chat message', function(msg){
+        
+        //get correct time 
+        let isPM = false;
+        let true_time = '';
+        let temp_time = msg.timestamp.slice(11, -11);
+        if (temp_time > 12) {
+            isPM = true;
+            temp_time = temp_time - 12;
+        }
+        else {
+            isPM = false;
+        }
+        //add the pm or the am to the end of the time
+        if (isPM) {
+            true_time = temp_time + msg.timestamp.slice(13, -8) + ' pm';
+        }
+        else {
+            true_time = temp_time + msg.timestamp.slice(13, -8) + ' am';
+        }
+
         //bold the current user
         if (curr_username === msg.user) {
-            $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '"><b>' + msg.user + "</b></div><div class='current_user'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+            $('#messages').append($("<li class='current_user'>").html('<div class="username" style="color: #' + color_u[msg.index].color + '"><b>' + msg.user + "</b></div><div class='time'> " + msg.timestamp.replace(/#|-/g,'/').slice(0, -14) + '  ' + true_time + "</div><div class='message_list'> " + msg.mess + "</div>"));
         }
         //if its not the current user then dont bold it
         else {
-            $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '">' + msg.user + "</div><div class='message_list'> " + msg.mess + "<br/></div><div class=time> " + msg.timestamp.replace('T', ' ').slice(0, -8) + "</div>"));
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + color_u[msg.index].color + '">' + msg.user + "</div><div class='time'> "+  msg.timestamp.replace(/#|-/g,'/').slice(0, -14) + '  ' + true_time + "</div><div class='message_list'> "  + msg.mess + "</div>"));
         }
         //make the messages scrollable
-        console.log($('#messages')[0].scrollHeight);
         $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
     });
 

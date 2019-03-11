@@ -28,7 +28,6 @@ io.on('connection', function(socket){
       //add the username to list of active users
       usernames.push(socket.username);
       user_color.push({usr: socket.username, color: '000000'});
-      console.log("1 " + socket.username);
       //send all people currently on to the client
       socket.emit('all users', {username: socket.username , current_users: usernames, history: message_history, color: user_color});
       //show a new user to all of the current users
@@ -40,7 +39,6 @@ io.on('connection', function(socket){
       let ts = new Date();
       //corrent the time to fit in the right time zone
       ts.setTime( ts.getTime() - ts.getTimezoneOffset()*60*1000 );
-      console.log("2 " + socket.username);
       //save the messages for new users
       message_history.push({mess: msg, user: socket.username, timestamp: ts, color: user_color});
       //send the message and username and the time to the client
@@ -72,7 +70,6 @@ io.on('connection', function(socket){
         usernames.splice(usernames.indexOf(socket.username), 1);
         socket.username = data;
         usernames.push(socket.username);
-        console.log(usernames, socket.username);
         //tell client about nick change
         socket.emit('new nickname', {username: socket.username , current_users: usernames});
         
@@ -84,7 +81,6 @@ io.on('connection', function(socket){
       if (ind != -1) {
         user_color[ind].color = color;
       }
-      console.log(user_color);
       socket.broadcast.emit('color forall', socket.username, color);
       socket.emit('change color', user_color);
     });

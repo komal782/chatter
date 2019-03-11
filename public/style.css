@@ -4,8 +4,30 @@
     box-sizing: border-box; 
 }
 
+li {
+    list-style: none;
+}
+
 body { 
-    font: 13px Helvetica, Arial; 
+    font-family: 'Thasadith', sans-serif;
+}
+
+.error {
+    font-size: 15px;
+    color: indianred;
+}
+
+.username {
+    font-size: 20px;
+}
+
+.you {
+    font-size: 24px;
+    color: salmon;
+}
+
+.time {
+    font-size: 11px;
 }
 
 #message-form { 
@@ -48,16 +70,24 @@ form button {
 
 #messages li { 
     padding: 5px 10px; 
+    border-bottom: 1px solid;
 }
 
-#messages li:nth-child(odd) { 
-    background: #eee; 
-}
 
 #userdiv {
+    text-align: center;
+    padding-top: 5%;
     position: fixed;
     width: 200px;
     height: 100%;
+    float: left;
+    border: 1px solid;
+}
+
+#userdiv_title {
+    text-align: center;
+    position: fixed;
+    width: 200px;
     float: left;
     border: 1px solid;
 }
