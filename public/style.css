@@ -8,13 +8,18 @@ li {
     list-style: none;
 }
 
+.current_user {
+    background: #FFF1EA;
+}
+
 body { 
+    background: #F3EFE0;
     font-family: 'Thasadith', sans-serif;
 }
 
 .error {
     font-size: 15px;
-    color: indianred;
+    color: #C33149;
 }
 
 .username {
@@ -22,39 +27,52 @@ body {
 }
 
 .you {
+    padding-top: 10%;
     font-size: 24px;
-    color: salmon;
+    color: #C33149;
 }
 
 .time {
     font-size: 11px;
 }
 
+.message_list {
+    font-size: 16px;
+}
+
+#userdiv_title {
+    background: #A8C256;
+}
+
 #message-form { 
-    background: #000; 
+    margin:0;
     padding: 3px; 
     position: fixed; 
     bottom: 0; 
-    width: 100%; 
+    width: 87%; 
 }
 
 #m { 
-    border: 0; 
-    padding: 10px; 
-    width: 90%; 
+    width: 53%;
+    font-family: 'Thasadith', sans-serif;
+    font-size: 16px; 
+    padding: 5px; 
     margin-right: .5%; 
+    margin-bottom: 0;
 }
 
 form button { 
-    width: 9%; 
-    background: rgb(130, 224, 255); 
+    font-size: 15px;
+    font-family: 'Thasadith', sans-serif;
+    margin-bottom: 0;
+    background: #C33149; 
+    color: whitesmoke;
     border: none; 
-    padding: 10px; 
 }
 
 #mess {
     float: right;
-    width: 844px;
+    width: 100%;
     height: 650px;
     display: flex;
     flex-direction: column;
@@ -62,6 +80,7 @@ form button {
 }
 
 #messages { 
+    width: 111%;
     overflow: auto;
     position: relative;
     margin-bottom: 0;
@@ -76,18 +95,33 @@ form button {
 
 #userdiv {
     text-align: center;
-    padding-top: 5%;
     position: fixed;
-    width: 200px;
     height: 100%;
+    width: 200px;
+    padding-bottom: 5%;
+    padding-top: 5%;
     float: left;
     border: 1px solid;
 }
 
 #userdiv_title {
+    width: 200px;
     text-align: center;
     position: fixed;
-    width: 200px;
     float: left;
     border: 1px solid;
+}
+
+@media only screen and (max-width: 768px)  {
+    #mess {
+        height: 362px;
+        margin-top: 78%;
+    }
+    #userdiv {
+        height: 250px;
+        width: 80%;
+    }
+    #userdiv_title {
+        width: 80%;
+    }
 }

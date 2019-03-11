@@ -28,7 +28,7 @@ $(function() {
         let all_users = ''
         //create a string with all users currently online
         for (let i = 0; i < data.current_users.length; i++) {
-            all_users =  all_users + '<li>' + data.current_users[i] + '<br/>';
+            all_users =  all_users + '<li>' + data.current_users[i];
         }
         //make sure the time is in the right format
         let isPM = false;
@@ -57,11 +57,11 @@ $(function() {
                 if (i != -1) {
                     col = color_u[i].color;
                 }
-            $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='time'> " + chat_history[j].timestamp.replace(/#|-/g,'/').slice(0, -14) + '  ' + true_time +  "<br/></div><div class='message_list'> " + chat_history[j].mess + "</div>"));
+            $('#messages').append($("<li>").html('<div class="username" style="color: #' + col + '">' + chat_history[j].user + "</div><div class='time'> " + chat_history[j].timestamp.replace(/#|-/g,'/').slice(0, -14) + '  ' + true_time +  "</div><div class='message_list'> " + chat_history[j].mess + "</div>"));
         }
         $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
         //print current users to user
-        $users.html("<div> <p class='you'>" + data.username + '</p></div><br/>' + all_users);
+        $users.html("<div> <p class='you'>" + data.username + '</p></div>' + all_users);
     });
 
     //for when a user enters
@@ -71,7 +71,7 @@ $(function() {
         //add user to active user list
         active_users.push(data);
         //add the user to the user list
-        $users.append($('<li>').html(data + '<br/>'));
+        $users.append($('<li>').html(data));
     });
 
     socket.on('add newnick', function(old, nw){
@@ -81,9 +81,9 @@ $(function() {
         //change the user list
         let nw_user = '';
         for (let i = 0; i < active_users.length; i++) {
-            nw_user =  nw_user + '<li>' + active_users[i] + '<br/>';
+            nw_user =  nw_user + '<li>' + active_users[i];
         }
-        $users.html("<div> <p class='you'>" + curr_username + '</p></div><br/>' + nw_user);
+        $users.html("<div> <p class='you'>" + curr_username + '</p></div>' + nw_user);
     });
 
     //change the color for that user for everyone
@@ -100,9 +100,9 @@ $(function() {
         //update list of active users
         let new_users = '';
         for (let i = 0; i < active_users.length; i++) {
-            new_users =  new_users + '<li>' + active_users[i] + '<br/>';
+            new_users =  new_users + '<li>' + active_users[i];
         }
-       $users.html("<div> <p class='you'>" + curr_username + '</p></div><br/>' + new_users);
+       $users.html("<div> <p class='you'>" + curr_username + '</p></div>' + new_users);
     });
 
     //when the user types a message (from the tutorial)
@@ -126,15 +126,13 @@ $(function() {
                 //error message for special characters
                 else {
                     $('#messages').append($("<li>").html('<div class="error">Please only user numbers and letters to change the color.</div>'));
-
-                   // $userError.html('Please only user numbers and letters to change the color.')
+                    $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
                 }
             }
             //error message for length
             else {
                 $('#messages').append($("<li>").html('<div class="error">Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0).</div>'));
-
-                //$userError.html('Please format /nickcolor like RRBBGG (eg. /nickcolor c0c0c0)');
+                $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
             }
             $('#m').val('');
             return false;
@@ -149,8 +147,7 @@ $(function() {
                 socket.emit('change nick', new_name, function(data){
                     if(!data) {
                         $('#messages').append($("<li>").html('<div class="error">This username is already taken! Please choose another one.</div>'));
-
-                      //  $userError.html('This username is already taken! Please choose another one.')
+                        $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
                     }
                     //show others who changed name
                     else {
@@ -161,8 +158,7 @@ $(function() {
             //error message
             else {
                 $('#messages').append($("<li>").html('<div class="error">Please pick a shorter username (can be up to 20 characters long).</div>'));
-
-               // $userError.html('Please pick a shorter username (can be up to 20 characters long).')
+                $('#messages')[0].scrollTop =  $('#messages')[0].scrollHeight;
             }
             $('#m').val('');
             return false;
@@ -183,9 +179,9 @@ $(function() {
         //update list of active users
         let new_1 = '';
         for (let i = 0; i < active_users.length; i++) {
-            new_1 =  new_1 + '<li>' + active_users[i] + '<br/>';
+            new_1 =  new_1 + '<li>' + active_users[i];
         }
-        $users.html("<div> <p class='you'> " + curr_username + '</p></div><br/>' + new_1);
+        $users.html("<div> <p class='you'> " + curr_username + '</p></div>' + new_1);
     });
     //update the color_u list
     socket.on('change color', function(data){

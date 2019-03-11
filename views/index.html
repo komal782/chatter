@@ -2,32 +2,33 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Thasadith" rel="stylesheet">
     <link rel="stylesheet" href="public/style.css" >
   </head>
 
   <body>
 
-    <div id="username-div">
-      <p id='username-error'></p>
-    </div>
-    
-    <h2 id='userdiv_title'>ONLINE</h2>
-    <div id='userdiv'></div>
+    <div class="container">
+      <div class="row">
+        
+        <div class="four columns" style="width: 200px; height: 1vw;">
+          <h2 id='userdiv_title'>ONLINE</h2>
+          <div id='userdiv'></div>
+        </div>
 
-  
-      <div id='mess'>
-        <ul id="messages"></ul>
+        <div class='eight columns'>
+          <div id='mess'>
+            <ul id="messages"></ul>
+            <form id ='message-form'action="">
+              <input id="m" autocomplete="off" />
+              <button>Send</button>
+            </form>
+          </div>
+        </div>
+
       </div>
- 
-    
-
-    <form id ='message-form'action="">
-      <input id="m" autocomplete="off" />
-      <button>Send</button>
-    </form>
-  
-
+    </div>
 
   </body>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
